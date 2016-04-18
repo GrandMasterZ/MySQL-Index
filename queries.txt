@@ -1,0 +1,54 @@
+1.
+
+SELECT 1:
+
+Suskaiciuota kiek buvo gauta pajamu is kiekvienos prekes, atrusiuota pagal prekiu pardavimu skaiciu.
+
+SELECT SQL_NO_CACHE Materials.name, JobsRegister_Materials.count, Materials.price, Materials.price*JobsRegister_Materials.count as Total FROM JobsRegister_Materials LEFT JOIN Materials ON JobsRegister_Materials.materialId=Materials.materialId WHERE JobsRegister_Materials.count > 200 AND name is not null group by Materials.name ORDER BY Total desc;
+
+SELECT 2:
+
+Suskaiciuota kiek kiekvienos prekes buvo parduota per metus.
+
+SELECT SQL_NO_CACHE Materials.name as name, sum(JobsRegister_Materials.count) as count FROM JobsRegister_Materials LEFT JOIN Materials ON Materials.materialId=JobsRegister_Materials.materialId LEFT JOIN JobsRegister ON JobsRegister.jobsRegisterId=JobsRegister_Materials.jobsRegisterId Where name is not null and JobsRegister.arrivalDate between '2014-01-01' AND '2014-12-30' and count>10.000 group by name ORDER BY count desc;
+
+SELECT 3:
+
+Suskaiciuota kiek tam tikras darbuotojas pagamino prekiu.
+
+SELECT SQL_NO_CACHE kkTechnicianId, COUNT(*) as TotalMaterials FROM JobsRegister_Materials LEFT JOIN Materials ON JobsRegister_Materials.materialId=Materials.materialId LEFT JOIN JobsRegister ON JobsRegister.jobsRegisterId=JobsRegister_Materials.jobsRegisterId WHERE kkTechnicianId=24 group by kkTechnicianId;
+
+2.
+
+UPDATE 1: 
+
+UPDATE JobsRegister SET total = (SELECT SUM(JobsRegister_Materials.count) FROM JobsRegister_Materials WHERE JobsRegister_Materials.jobsRegisterId = JobsRegister.jobsRegisterId);
+
+UPDATE 2:
+
+UPDATE JobsRegister SET count = (SELECT COUNT(JobsRegister_Materials.materialId) FROM JobsRegister_Materials WHERE JobsRegister_Materials.jobsRegisterId = JobsRegister.jobsRegisterId);
+
+3.
+
+DELETE 1:
+ 
+DELETE FROM JobsRegister_Materials WHERE JobsRegisterMaterialId>310000;
+
+DELETE 2:
+
+DELETE FROM JobsRegister Where kkTechnicianId=224;
+
+4.
+
+INSERT is failo:
+
+Uzklausa kuri is .csv failo insertino i duombaze.
+
+LOAD DATA INFILE '/var/www/html/index/randomData.csv'
+	INTO TABLE Materials
+	FIELDS TERMINATED BY ','
+	LINES TERMINATED BY '\n'
+	IGNORE 1 LINES;
+
+
+
